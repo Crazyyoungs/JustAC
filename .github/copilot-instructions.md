@@ -36,7 +36,7 @@ end
 ## Versioning
 
 **Semantic Versioning (MAJOR.MINOR.PATCH):**
-- Current: 4.12.0
+- Current: 4.22.1
 - Hotfixes: 4.5.5, 4.5.6, etc. (bug fixes only)
 - Features: 4.6.0, 4.7.0, etc. (new functionality)
 - Breaking: 5.0.0, 6.0.0, etc. (major rewrites)
@@ -50,41 +50,45 @@ LibStub modules in `JustAC.toc` — **MUST edit in dependency order**:
 ```
 BlizzardAPI → FormCache → MacroParser → ActionBarScanner → RedundancyFilter
                                     ↓
-              SpellQueue → UI/* → DefensiveEngine → GapCloserEngine → DebugCommands → Options/SpellSearch → Options/LiveSearchPopup → Options/* → TargetFrameAnchor → KeyPressDetector → JustAC
+              SpellQueue → UI/* → DefensiveEngine → GapCloserEngine → BurstInjectionEngine → DebugCommands → Options/* → TargetFrameAnchor → KeyPressDetector → JustAC
 ```
 
 | Module | Role | Key Exports | Current Version |
 |--------|------|-------------|-----------------|
 | `Locales/*.lua` | AceLocale-3.0 localization (9 languages) | `L` global | N/A (not LibStub) |
-| `SpellDB.lua` | Static spell data (defensive, class defaults) | `GetDefaults()`, `GetSpecKey()` | v8 |
-| `BlizzardAPI.lua` | Root: secret value primitives, version detection | `IsSecretValue()`, `Unsecret()`, `GetActionBarUsability()` | v33 |
-| `BlizzardAPI/CooldownTracking.lua` | Local CD tracking (12.0+ secret workaround) | `IsSpellReady()`, `RegisterSpellForTracking()`, `IsSpellOnLocalCooldown()` | v6 |
+| `SpellDB.lua` | Static spell data (defensive, class defaults) | `GetDefaults()`, `GetSpecKey()` | v9 |
+| `BlizzardAPI.lua` | Root: secret value primitives, version detection | `IsSecretValue()`, `Unsecret()`, `GetActionBarUsability()` | v35 |
+| `BlizzardAPI/CooldownTracking.lua` | Local CD tracking (12.0+ secret workaround) | `IsSpellReady()`, `RegisterSpellForTracking()`, `IsSpellOnLocalCooldown()` | v9 |
 | `BlizzardAPI/SecretValues.lua` | Feature availability gates, aura timing | `IsRedundancyFilterAvailable()`, `IsMidnightOrLater()` | v1 |
-| `BlizzardAPI/SpellQuery.lua` | Spell info, usability, rotation API, items | `GetProfile()`, `GetSpellInfo()`, `IsSpellUsable()` | v1 |
-| `BlizzardAPI/StateHelpers.lua` | Defensive/item state, health, CC immunity, target analysis | `CheckDefensiveItemState()`, `GetPlayerHealthPercent()`, `IsTargetCCImmune()` | v5 |
+| `BlizzardAPI/SpellQuery.lua` | Spell info, usability, rotation API, items | `GetProfile()`, `GetSpellInfo()`, `IsSpellUsable()` | v2 |
+| `BlizzardAPI/StateHelpers.lua` | Defensive/item state, health, CC immunity, target analysis | `CheckDefensiveItemState()`, `GetPlayerHealthPercent()`, `IsTargetCCImmune()` | v7 |
 | `FormCache.lua` | Shapeshift form state (Druid/Rogue/etc) | `GetActiveForm()`, `GetFormIDBySpellID()` | v11 |
-| `MacroParser.lua` | `[mod]`, `[form]`, `[spec]` conditional parsing | `GetMacroSpellInfo()`, quality scoring | v21 |
-| `ActionBarScanner.lua` | Spell→keybind lookup, slot caching | `GetSpellHotkey()`, `GetSlotForSpell()` | v35 |
-| `RedundancyFilter.lua` | Hide active buffs/forms | `IsSpellRedundant()` | v41 |
-| `SpellQueue.lua` | Throttled spell queue, proc detection | `GetCurrentSpellQueue()`, blacklist | v37 |
-| **UI/** | **UI rendering subsystem (5 files)** | | |
-| `UI/UIHealthBar.lua` | Health bar widget | `Create()`, `Update()` | v7 |
-| `UI/UIAnimations.lua` | Animation helpers (glow, flash, channel fill) | `StartAssistedGlow()`, `ShowProcGlow()`, `StartFlash()` | v11 |
-| `UI/UIFrameFactory.lua` | Icon frame pool | `AcquireFrame()`, `ReleaseFrame()` | v12 |
-| `UI/UIRenderer.lua` | Icon rendering + Masque integration | `RenderSpellQueue()`, frame management | v17 |
-| `UI/UINameplateOverlay.lua` | Nameplate overlay rendering | `Create()`, `Destroy()`, `Update()` | v6 |
+| `MacroParser.lua` | `[mod]`, `[form]`, `[spec]` conditional parsing | `GetMacroSpellInfo()`, quality scoring | v23 |
+| `ActionBarScanner.lua` | Spell→keybind lookup, slot caching | `GetSpellHotkey()`, `GetSlotForSpell()` | v37 |
+| `RedundancyFilter.lua` | Hide active buffs/forms | `IsSpellRedundant()` | v42 |
+| `SpellQueue.lua` | Throttled spell queue, proc detection | `GetCurrentSpellQueue()`, blacklist | v40 |
+| **UI/** | **UI rendering subsystem (6 files)** | | |
+| `UI/UIHealthBar.lua` | Health bar widget | `Create()`, `Update()` | v8 |
+| `UI/UIAnimations.lua` | Animation helpers (glow, flash, channel fill) | `StartAssistedGlow()`, `ShowProcGlow()`, `StartFlash()` | v15 |
+| `UI/CastInterruptTracker.lua` | Interrupt debounce, cast bar discovery, LSM sound registration | `EvaluateInterrupt()`, `PlayInterruptAlertSound()`, `NotifyCCApplied()` | v1 |
+| `UI/UIFrameFactory.lua` | Icon frame pool | `AcquireFrame()`, `ReleaseFrame()` | v15 |
+| `UI/UIRenderer.lua` | Icon rendering + Masque integration | `RenderSpellQueue()`, frame management | v23 |
+| `UI/UINameplateOverlay.lua` | Nameplate overlay rendering | `Create()`, `Destroy()`, `Update()` | v10 |
 | `DefensiveEngine.lua` | Defensive spell evaluation | `EvaluateDefensives()` | v1 |
-| `GapCloserEngine.lua` | Gap-closer spell suggestions (offensive queue) | `GetGapCloserSpell()`, `IsGapCloserSpell()`, `InvalidateGapCloserCache()` | v3 |
+| `GapCloserEngine.lua` | Gap-closer spell suggestions (offensive queue) | `GetGapCloserSpell()`, `IsGapCloserSpell()`, `InvalidateGapCloserCache()` | v6 |
+| `BurstInjectionEngine.lua` | Two-phase burst injection (trigger → inject priority spells) | `TryActivateBurst()`, `GetBurstStatus()`, `PreCacheRotationCooldowns()` | v5 |
 | `DebugCommands.lua` | In-game diagnostics | `/jac inspect <topic>`, `/jac find` | v19 |
-| **Options/** | **Modular options panel (11 files)** | | |
+| **Options/** | **Modular options panel (13 files)** | | |
 | `Options/SpellSearch.lua` | Shared spell search, filter state, spell list utils | `BuildSpellbookCache()`, `AddSpellToList()` | v1 |
 | `Options/LiveSearchPopup.lua` | Persistent modal for spell/item selection | `Open()`, `Close()`, `IsOpen()` | v1 |
 | `Options/General.lua` | General tab (display mode, layout, visibility) | `CreateTabArgs()` | v4 |
-| `Options/StandardQueue.lua` | Standard Queue tab (icon size, spacing, layout) | `CreateTabArgs()` | v2 |
+| `Options/StandardQueue.lua` | Standard Queue tab (icon size, spacing, layout) | `CreateTabArgs()` | v4 |
 | `Options/Offensive.lua` | Offensive tab + blacklist management | `CreateTabArgs()`, `UpdateBlacklistOptions()` | v1 |
-| `Options/Overlay.lua` | Nameplate Overlay tab | `CreateTabArgs()` | v2 |
+| `Options/CustomQueue.lua` | Custom Queue tab (manual spell list override) | `CreateTabArgs()` | v1 |
+| `Options/Overlay.lua` | Nameplate Overlay tab | `CreateTabArgs()` | v3 |
 | `Options/Defensives.lua` | Defensives tab + spell list management | `CreateTabArgs()`, `UpdateDefensivesOptions()` | v1 |
 | `Options/GapClosers.lua` | Gap Closers tab (sub-tab of Offensive) | `CreateTabArgs()`, `UpdateGapCloserOptions()` | v1 |
+| `Options/BurstInjection.lua` | Burst Injection tab (trigger + spell list) | `CreateTabArgs()` | v1 |
 | `Options/Labels.lua` | Icon Labels tab (text overlays) | `CreateTabArgs()` | v4 |
 | `Options/Hotkeys.lua` | Hotkey Overrides tab | `CreateTabArgs()`, `UpdateHotkeyOverrideOptions()` | v1 |
 | `Options/Profiles.lua` | Per-spec profile switching (injected into profiles) | `AddSpecProfileOptions()` | v1 |
