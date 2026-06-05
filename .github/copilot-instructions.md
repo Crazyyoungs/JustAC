@@ -32,11 +32,12 @@ end
 4. **DO NOT auto-increment versions** — Track changes in `UNRELEASED.md`, only bump version on explicit instruction
 5. **DO NOT auto-build or push** — Commit changes, let user build/push manually
 6. **NO AI attribution** — Never add `Co-Authored-By`, credits, acknowledgments, or any other reference to AI agents/models in commit messages, code comments, README, CHANGELOG, or any project file. All contributions are authored solely by the project owner.
+7. **Release notes must be player-facing** — `UNRELEASED.md` and `CHANGELOG.md` should focus on user-visible changes, fixes, and configuration impacts. Technical details are allowed, but keep them simple and concise. Never mention AI, agents, models, or tooling attribution in release notes.
 
 ## Versioning
 
 **Semantic Versioning (MAJOR.MINOR.PATCH):**
-- Current: 4.22.1
+- Current: 4.22.2
 - Hotfixes: 4.5.5, 4.5.6, etc. (bug fixes only)
 - Features: 4.6.0, 4.7.0, etc. (new functionality)
 - Breaking: 5.0.0, 6.0.0, etc. (major rewrites)
@@ -166,9 +167,8 @@ if actionType == "spell" and type(id) == "string" and id == "assistedcombat" the
 
 ## Defensive Spell System
 
-Two-tier health thresholds in `JustAC.lua`:
-- `CLASS_SELFHEAL_DEFAULTS` — 80% threshold, quick heals
-- `CLASS_COOLDOWN_DEFAULTS` — 60% threshold, major defensives
+Spell lists managed by `DefensiveEngine.lua` using `SpellDB.CLASS_DEFENSIVE_DEFAULTS` (via `SPELL_LIST_CONFIG`).
+Also manages `CLASS_PETHEAL_DEFAULTS` and `CLASS_PET_REZ_DEFAULTS`.
 
 ## 12.0 Compatibility & Secret Values
 
