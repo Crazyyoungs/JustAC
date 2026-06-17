@@ -1,9 +1,0 @@
-## Title: Blizzard_PrivateAurasUI
-## UseSecureEnvironment: 1
-## Dep: Blizzard_SharedXMLGame
-## Dep: Blizzard_FrameXMLUtil
-## Dep: Blizzard_GameTooltip
-## AllowLoad: game
-Blizzard_PrivateAurasUI.lua
-Blizzard_PrivateAurasUI.xml
-PrivateAuraInit.lua
