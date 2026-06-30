@@ -17,11 +17,11 @@ Analysis of three nameplate addons in the workspace. Use this as context for a d
 **Path:** `r:\WOW\Interface\AddOns\Platynator\`
 
 ### Architecture
-- **Core/** — Config, Constants, Initialize, Utilities
-- **Display/** — 9 files: health bar, cast bar, power, text, auras, markers, highlights
-- **CustomiseDialog/** — Visual profile designer with import/export
-- **API/** — Public text override API
-- **Libs/** — LibStub + LibSharedMedia-3.0
+- **Core/** - Config, Constants, Initialize, Utilities
+- **Display/** - 9 files: health bar, cast bar, power, text, auras, markers, highlights
+- **CustomiseDialog/** - Visual profile designer with import/export
+- **API/** - Public text override API
+- **Libs/** - LibStub + LibSharedMedia-3.0
 
 ### Hooking
 ```lua
@@ -48,7 +48,7 @@ end)
 ### 12.0 Compatibility
 - `IsMidnight = select(4, GetBuildInfo()) >= 120001` in Constants.lua
 - Aura frames handle opaque duration objects: `SetCooldownFromDurationObject(aura.durationSecret)`
-- No direct `UnitHealth()` usage (good — avoids secret health problem)
+- No direct `UnitHealth()` usage (good - avoids secret health problem)
 
 ### Performance
 - **8 frame pools** via `CreateFramePool()` (reuse on add/remove)
@@ -68,10 +68,10 @@ end)
 
 ### Architecture
 - ~40 root `.lua` files (monolithic, not modular libraries)
-- `Plater.lua` — main entry + cache definitions
-- `Definitions.lua` — extensive `@class`/`@alias` type annotations
-- `Plater_API.lua` — minimal public API
-- **Requires DetailsFramework-1.0** — unit frame classes, GUI builders, DB abstraction
+- `Plater.lua` - main entry + cache definitions
+- `Definitions.lua` - extensive `@class`/`@alias` type annotations
+- `Plater_API.lua` - minimal public API
+- **Requires DetailsFramework-1.0** - unit frame classes, GUI builders, DB abstraction
 - Also uses: LibRangeCheck-3.0, LibCustomGlow-1.0, LibSharedMedia-3.0
 
 ### Hooking
@@ -84,10 +84,10 @@ end)
 ```
 
 ### Key Elements
-- `df_healthbar` — custom health bar with absorb/heal prediction, execute range
-- `df_castbar` — cast bar with target name, throttled updates
-- `df_powerbar` — energy/mana display
-- `BuffFrame` / `BuffFrame2` — separate aura containers
+- `df_healthbar` - custom health bar with absorb/heal prediction, execute range
+- `df_castbar` - cast bar with target name, throttled updates
+- `df_powerbar` - energy/mana display
+- `BuffFrame` / `BuffFrame2` - separate aura containers
 - Custom indicators: threat, focus, raid markers
 - Target highlight (neon glow)
 - ExtraIconFrame for additional status
@@ -120,9 +120,9 @@ end)
 **Path:** `r:\WOW\Interface\AddOns\BlizzPlatesFix\`
 
 ### Architecture
-- **Core/** (14 files) — Engine, Events, Dispatch, Hooks, HooksDispatch, ModuleManager, Config
-- **Modules/** (17 files) — Each module = `{Init, Update, Reset}` pattern
-- **UI/** — Options panel + widgets
+- **Core/** (14 files) - Engine, Events, Dispatch, Hooks, HooksDispatch, ModuleManager, Config
+- **Modules/** (17 files) - Each module = `{Init, Update, Reset}` pattern
+- **UI/** - Options panel + widgets
 - Libs: LibStub, LibRangeCheck-3.0, LibDataBroker, LibDBIcon, LibSharedMedia-3.0
 
 ### Hooking
@@ -168,7 +168,7 @@ NS.REASON_CONFIG = 128  -- config applied
 ```
 
 ### 12.0 Compatibility
-- **NOT IMPLEMENTED** — No `issecretvalue()`, no `C_Secrets`, no version checks
+- **NOT IMPLEMENTED** - No `issecretvalue()`, no `C_Secrets`, no version checks
 - Direct `UnitHealth()`/`UnitHealthMax()` calls in health bar module → **will break in 12.0 combat**
 - Relies on Blizzard's `CompactUnitFrame_*` to handle secrets internally
 

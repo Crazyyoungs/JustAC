@@ -1,4 +1,4 @@
-# Cast Bar Secret Value Handling — Addon Research (WoW 12.0 Midnight)
+# Cast Bar Secret Value Handling - Addon Research (WoW 12.0 Midnight)
 
 Research into how three major addons handle `notInterruptible` and other secret values in cast bar code under WoW 12.0's secret value system.
 
@@ -25,7 +25,7 @@ Research into how three major addons handle `notInterruptible` and other secret 
 
 ## 1. Executive Summary
 
-All three addons converge on the same core strategy: **never read secret values directly — pipe them through Blizzard's secret-safe UI methods instead.** The differences are in elegance and edge-case handling.
+All three addons converge on the same core strategy: **never read secret values directly - pipe them through Blizzard's secret-safe UI methods instead.** The differences are in elegance and edge-case handling.
 
 | Problem | Blizzard's Solution | How Addons Use It |
 |---------|-------------------|-------------------|
@@ -66,12 +66,12 @@ local total = durationObj:GetTotalDuration()
 ### UnitCastingInfo Return Values (12.0)
 ```lua
 local name, text, texture, startTime, endTime, isTradeSkill, castID, notInterruptible, spellID, barID = UnitCastingInfo(unit)
--- name, text         — may be secret in combat
--- startTime, endTime — secret in combat
--- castID             — SECRET (use barID instead)
--- notInterruptible   — SECRET boolean
--- spellID            — may be secret in combat
--- barID              — NOT SECRET (10th return, new for 12.0)
+-- name, text         - may be secret in combat
+-- startTime, endTime - secret in combat
+-- castID             - SECRET (use barID instead)
+-- notInterruptible   - SECRET boolean
+-- spellID            - may be secret in combat
+-- barID              - NOT SECRET (10th return, new for 12.0)
 ```
 
 ---
@@ -421,7 +421,7 @@ local function DoCastsMatch(storedID, ...)
 end
 ```
 
-**Key insight:** When `castID` is secret, SUF stores a sentinel string `"secret_cast"` and matches any future secret castID to it. This is a pessimistic approach — it assumes any secret cast matches the stored one.
+**Key insight:** When `castID` is secret, SUF stores a sentinel string `"secret_cast"` and matches any future secret castID to it. This is a pessimistic approach - it assumes any secret cast matches the stored one.
 
 ### 5.2 Interrupt State (Uninterruptible Overlay)
 
@@ -519,7 +519,7 @@ SUF polls for "fake" units (units without real event support, like `targettarget
 
 ## 7. Notable Patterns for JustAC
 
-### 7.1 `SetAlphaFromBoolean` — Universal Pattern
+### 7.1 `SetAlphaFromBoolean` - Universal Pattern
 
 All three addons use `SetAlphaFromBoolean` for any UI element whose visibility depends on a secret boolean. This is the primary tool for handling `notInterruptible`.
 
@@ -533,7 +533,7 @@ overlay:SetAlphaFromBoolean(notInterruptible, 0.6, 0)     -- semi-transparent ov
 icon:SetAlphaFromBoolean(isInRange, 1, 0.4)               -- dim when out of range
 ```
 
-### 7.2 `C_CurveUtil.EvaluateColorValueFromBoolean` — Color from Secret Boolean
+### 7.2 `C_CurveUtil.EvaluateColorValueFromBoolean` - Color from Secret Boolean
 
 Only the DetailsFramework uses this, but it's the most powerful pattern for coloring based on secret state:
 
@@ -545,7 +545,7 @@ local b = C_CurveUtil.EvaluateColorValueFromBoolean(secretBool, bIfTrue, bIfFals
 texture:SetVertexColor(r, g, b)
 ```
 
-### 7.3 DurationObject Pipeline — Replace All Manual Time Math
+### 7.3 DurationObject Pipeline - Replace All Manual Time Math
 
 ```lua
 -- OLD (broken with secret values):
@@ -560,7 +560,7 @@ castBar:SetTimerDuration(durationObj,
     Enum.StatusBarTimerDirection.ElapsedTime)  -- or .RemainingTime for channels
 ```
 
-### 7.4 Cast Identity — Use barID, Not castID
+### 7.4 Cast Identity - Use barID, Not castID
 
 ```lua
 -- castID (8th return) is now secret
@@ -586,7 +586,7 @@ end
 oUF's pattern of deriving `notInterruptible` from the **event name** rather than from API returns is notable:
 
 ```lua
--- The event name itself tells you the state — no secret value involved
+-- The event name itself tells you the state - no secret value involved
 local notInterruptible = (event == 'UNIT_SPELLCAST_NOT_INTERRUPTIBLE')
 ```
 
@@ -628,13 +628,13 @@ castBar:SetTimerDuration(durationObject,
 | `C_Spell.IsSpellImportant(spellID)` | `boolean` | No | DF uses for orange "important" cast color |
 | `C_CurveUtil.EvaluateColorValueFromBoolean(bool, v1, v2)` | secret number | Accepts secret | Per-channel color selection |
 | `C_DurationUtil.CreateDuration()` | DurationObject | No | Synthetic duration for test/preview |
-| `DurationObject:SetTimeFromEnd(seconds)` | — | — | Set duration countdown |
+| `DurationObject:SetTimeFromEnd(seconds)` | - | - | Set duration countdown |
 | `DurationObject:GetRemainingDuration()` | number | Maybe | Remaining time |
 | `DurationObject:GetElapsedDuration()` | number | Maybe | Elapsed time |
 | `DurationObject:GetTotalDuration()` | number | Maybe | Total duration |
-| `StatusBar:SetTimerDuration(durObj, interp, dir)` | — | Accepts secret | Drive bar from DurationObject |
-| `StatusBar:GetTimerDuration()` | DurationObject | — | Retrieve stored DurationObject |
-| `Widget:SetAlphaFromBoolean(bool, alphaT, alphaF)` | — | Accepts secret | Boolean → alpha pipe |
+| `StatusBar:SetTimerDuration(durObj, interp, dir)` | - | Accepts secret | Drive bar from DurationObject |
+| `StatusBar:GetTimerDuration()` | DurationObject | - | Retrieve stored DurationObject |
+| `Widget:SetAlphaFromBoolean(bool, alphaT, alphaF)` | - | Accepts secret | Boolean → alpha pipe |
 | `UnitCastingDuration(unit)` | DurationObject | No | Cast duration opaque object |
 | `UnitChannelDuration(unit)` | DurationObject | No | Channel duration opaque object |
 | `UnitEmpoweredChannelDuration(unit, showHold)` | DurationObject | No | Empowered channel duration |

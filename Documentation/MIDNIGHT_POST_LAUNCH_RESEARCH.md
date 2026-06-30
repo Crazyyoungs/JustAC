@@ -10,7 +10,7 @@ and reference addon patterns observed in the wild.
 
 ## What Actually Happened vs. Beta Predictions
 
-### CLEU: Completely Removed (not secret — gone)
+### CLEU: Completely Removed (not secret - gone)
 
 Combat Log Events (`COMBAT_LOG_EVENT_UNFILTERED`) were fully removed, not just restricted.
 Source data is gone; no fallback pattern exists.
@@ -40,9 +40,9 @@ The whitelist was smaller than anticipated at launch. Blizzard deferred many add
 whitelist entries to Patch 12.0.1 (released ~2 weeks after launch). Players needed "creative
 solutions" in the interim. Relevant whitelisted spells at 12.0:
 
-- **GCD dummy spell** (already used in `BlizzardAPI.GetGCDInfo()`) — officially whitelisted
-- **All combat resurrection spells** — cooldowns and charge counts non-secret
-- **Maelstrom Weapon** — full aura data (Enhancement Shaman)
+- **GCD dummy spell** (already used in `BlizzardAPI.GetGCDInfo()`) - officially whitelisted
+- **All combat resurrection spells** - cooldowns and charge counts non-secret
+- **Maelstrom Weapon** - full aura data (Enhancement Shaman)
 - Devourer DH resource spells, Skyriding spells
 
 Additional per-spell whitelisting ongoing in 12.0.1+.
@@ -94,18 +94,18 @@ UnitPowerMissing(unit[, powerType])  --> number (raw resource missing)
 ```
 
 **CONFIRMED SECRET (2026-03-07):** ALL four helpers return secret values even **out of combat**:
-- `UnitHealthPercent("player")` — SECRET
-- `UnitHealthMissing("player")` — SECRET
-- `UnitPowerPercent("player")` — SECRET
-- `UnitPowerMissing("player")` — SECRET
+- `UnitHealthPercent("player")` - SECRET
+- `UnitHealthMissing("player")` - SECRET
+- `UnitPowerPercent("player")` - SECRET
+- `UnitPowerMissing("player")` - SECRET
 
-These are unusable for any logic — worse than `UnitHealth/UnitHealthMax` which are at least
+These are unusable for any logic - worse than `UnitHealth/UnitHealthMax` which are at least
 readable out of combat. The current `GetPlayerHealthPercentSafe()` fallback chain
 (UnitHealth/UnitHealthMax → LowHealthFrame) remains the correct approach.
 
 **CONFIRMED WORKING (2026-03-07):**
-- `C_UnitAuras.AuraIsBigDefensive()` — API exists (see action item #3)
-- `C_UnitAuras.GetUnitAuras()` — Works, returns aura table directly (see action item #4)
+- `C_UnitAuras.AuraIsBigDefensive()` - API exists (see action item #3)
+- `C_UnitAuras.GetUnitAuras()` - Works, returns aura table directly (see action item #4)
 
 ### Cast Sequence ID
 
@@ -248,7 +248,7 @@ Source: https://github.com/Mapkov2/Midnight-Simple-Auras
 Key patterns observed:
 - `issecretvalue` guard on every timing read before displaying duration
 - "Secure cooldown passthrough": obtain a `LuaDurationObject` via `GetSpellCooldownDuration`,
-  pass directly to `SetCooldownFromDurationObject` — no intermediate secret value touched
+  pass directly to `SetCooldownFromDurationObject` - no intermediate secret value touched
 - `MSA_BuffBridge.lua`: out-of-combat aura cache bridged into combat via instanceID maps
   (same pattern as JustAC RedundancyFilter v38)
 - Whitelisted aura handling: separate code path for spells where full data is available
@@ -278,14 +278,14 @@ customization hooks on top. Useful reference for the whitelist scope.
 
 ## Action Items for JustAC
 
-Priority ordered. None are regressions — these are improvements.
+Priority ordered. None are regressions - these are improvements.
 
 | Priority | Item | Location | Notes |
 |----------|------|----------|-------|
 | 1 | Add `C_Secrets.ShouldAurasBeSecret()` fast pre-check | RedundancyFilter.lua, SecretValues.lua | Short-circuit full aura scan when everything would be secret anyway |
 | ~~2~~ | ~~Validate `UnitHealthPercent("player")` non-secret status in-game~~ | ~~BlizzardAPI/StateHelpers.lua~~ | **REJECTED (2026-03-07):** Secret even out of combat. Current fallback chain is correct. |
 | 3 | Evaluate `C_UnitAuras.AuraIsBigDefensive()` for defensive tracking | DefensiveEngine.lua | Could replace/augment manual aura ID lists |
-| 4 | Migrate from `GetAuraDataByIndex` to `GetUnitAuras()` | RedundancyFilter.lua, SecretValues.lua, DebugCommands.lua | Cleanup pass — pcall fallback already in place |
+| 4 | Migrate from `GetAuraDataByIndex` to `GetUnitAuras()` | RedundancyFilter.lua, SecretValues.lua, DebugCommands.lua | Cleanup pass - pcall fallback already in place |
 | 5 | Consider `SecondsFormatter` for CD countdown display | UI/UIRenderer.lua | Only if current `SetCooldownFromDurationObject` path proves insufficient |
 
 ---

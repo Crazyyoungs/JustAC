@@ -4,7 +4,7 @@ When `C_UnitAuras.GetAuraDataByIndex()` returns secret values, these alternative
 
 ## IMPLEMENTED SOLUTION: auraInstanceID Mapping (RedundancyFilter v38)
 
-**Status:** ✅ Implemented and tested — handles multi-cycle removal/reapply in combat.
+**Status:** ✅ Implemented and tested - handles multi-cycle removal/reapply in combat.
 
 `auraInstanceID` is a **NeverSecret** stable numeric handle. The same ID maps to the same aura across combat entry. New auras get new IDs. This field is always readable, even when `spellId` and `name` are secret.
 
@@ -39,12 +39,12 @@ PLAYER_REGEN_ENABLED → clear combat tracking state
 
 ### Key Design Decisions
 
-1. **Instance maps persist across combat** — populated out of combat, used in combat
-2. **Pending activation FIFO** — handles recast after removal when new instance has secret spellId
-3. **combatRemovedSpellIDs** — prevents trusted cache merge from re-hiding removed buffs
-4. **spellStateKnown bypass** — if a spell is resolved (in cache) or explicitly removed, skip the non-DPS blanket filter
-5. **IsInPandemicWindow** — returns false for fresh inCombatActivations (no timing = just cast = full duration)
-6. **Harmful aura filtering** — debuffs can't consume pending activation entries meant for buffs
+1. **Instance maps persist across combat** - populated out of combat, used in combat
+2. **Pending activation FIFO** - handles recast after removal when new instance has secret spellId
+3. **combatRemovedSpellIDs** - prevents trusted cache merge from re-hiding removed buffs
+4. **spellStateKnown bypass** - if a spell is resolved (in cache) or explicitly removed, skip the non-DPS blanket filter
+5. **IsInPandemicWindow** - returns false for fresh inCombatActivations (no timing = just cast = full duration)
+6. **Harmful aura filtering** - debuffs can't consume pending activation entries meant for buffs
 
 ### Limitations
 
@@ -98,7 +98,7 @@ Based on Blizzard API Documentation (`SecretPredicateAPIDocumentation.lua`):
 | **Spec** | `GetNumSpecializations()` | Number of specs - ALWAYS SAFE |
 | **Spell Info** | `C_Spell.GetSpellInfo(spellID)` | Name, icon, etc - ALWAYS SAFE |
 | **Spell Info** | `C_Spell.GetSpellName(spellID)` | Spell name only - ALWAYS SAFE |
-| **Spell Info** | `C_Spell.GetOverrideSpell(spellID)` | **Removed in 12.0** — code guards with nil check, degrades gracefully |
+| **Spell Info** | `C_Spell.GetOverrideSpell(spellID)` | **Removed in 12.0** - code guards with nil check, degrades gracefully |
 | **Spell Overlay** | `C_SpellActivationOverlay.IsSpellOverlayed(spellID)` | Proc glow detection |
 | **Weapon Enchants** | `GetWeaponEnchantInfo()` | Weapon imbues - ALWAYS SAFE |
 
@@ -292,7 +292,7 @@ end
 
 ⚠️ **NOT AVAILABLE IN 12.0** - Combat log access is also restricted by secrets
 
-## Recommended Strategy — SUPERSEDED
+## Recommended Strategy - SUPERSEDED
 
 > **Note:** The auraInstanceID mapping approach (documented at the top of this file) is the implemented solution.
 > The layered approach below was the original pre-implementation plan. It is preserved for reference
@@ -333,7 +333,7 @@ local function HasBuffBySpellID_Smart(spellID, spellName)
 end
 ```
 
-## Testing Priority — RESOLVED\n\nThe auraInstanceID mapping approach was implemented and tested successfully.\nThe methods below were candidates evaluated before implementation:\n\n1. **auraInstanceID mapping** - ✅ IMPLEMENTED (RedundancyFilter v38) — NeverSecret handles, maps built OOC, resolved in combat\n2. **GetPlayerAuraBySpellID** - Not used (still returns secrets for spellId field)\n3. **GetAuraDataBySpellName** - Not used (still returns secrets)\n4. **Slot-based access** - Not used (same underlying data, same secrets)\n5. **Hardcoded filtering** - Superseded by instance map approach", "oldString": "## Testing Priority\n\n1. **GetPlayerAuraBySpellID** - Most promising, direct lookup by spell ID\n2. **GetAuraDataBySpellName** - Alternative using spell names\n3. **Slot-based access** - Different iteration method\n4. **Hardcoded filtering** - Current fallback (hide common buffs when secrets detected)
+## Testing Priority - RESOLVED\n\nThe auraInstanceID mapping approach was implemented and tested successfully.\nThe methods below were candidates evaluated before implementation:\n\n1. **auraInstanceID mapping** - ✅ IMPLEMENTED (RedundancyFilter v38) - NeverSecret handles, maps built OOC, resolved in combat\n2. **GetPlayerAuraBySpellID** - Not used (still returns secrets for spellId field)\n3. **GetAuraDataBySpellName** - Not used (still returns secrets)\n4. **Slot-based access** - Not used (same underlying data, same secrets)\n5. **Hardcoded filtering** - Superseded by instance map approach", "oldString": "## Testing Priority\n\n1. **GetPlayerAuraBySpellID** - Most promising, direct lookup by spell ID\n2. **GetAuraDataBySpellName** - Alternative using spell names\n3. **Slot-based access** - Different iteration method\n4. **Hardcoded filtering** - Current fallback (hide common buffs when secrets detected)
 
 ## Implementation Notes
 
@@ -477,7 +477,7 @@ end
 - `GetShapeshiftFormInfo()` / `GetNumShapeshiftForms()` / `GetShapeshiftFormID()`
 - `GetSpecialization()` / `GetSpecializationInfo()`
 - `UnitExists()` / `UnitIsDead()` / `UnitIsDeadOrGhost()`
-- `C_Spell.GetSpellInfo()` / `C_Spell.GetSpellName()` (`C_Spell.GetOverrideSpell` removed in 12.0 — guarded in code)
+- `C_Spell.GetSpellInfo()` / `C_Spell.GetSpellName()` (`C_Spell.GetOverrideSpell` removed in 12.0 - guarded in code)
 - `C_SpellActivationOverlay.IsSpellOverlayed()`
 - `GetWeaponEnchantInfo()`
 - `GetActionInfo()` (action type/ID - but "assistedcombat" string needs filtering)

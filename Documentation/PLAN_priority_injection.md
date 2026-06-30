@@ -10,7 +10,7 @@ Options/Defensives.lua as primary references.
 
 A user-configurable list of spells that JustAC injects into the DPS queue at a
 chosen position when a set of conditions is met. The gap-closer injection in
-SpellQueue.lua is the exact pattern — this generalises it so users can define
+SpellQueue.lua is the exact pattern - this generalises it so users can define
 their own rules.
 
 Example rules:
@@ -39,7 +39,7 @@ returns true). This limits what conditions can be used:
 Feasible condition types: **afterCast**, **isProcced**, **inCombat**.
 Display filters (per-entry toggles): **hideOnCooldown**, **hideIfNoResources**.
 
-Do NOT attempt aura-based or resource-level conditions — they are secret in
+Do NOT attempt aura-based or resource-level conditions - they are secret in
 combat and will always fail or return garbage.
 
 ---
@@ -187,7 +187,7 @@ if injectionList then
 end
 ```
 
-### 4. Options UI (Options/PriorityInjections.lua — new file)
+### 4. Options UI (Options/PriorityInjections.lua - new file)
 
 Mirror Options/GapClosers.lua structure. The main rebuild function is
 `UpdatePriorityInjectionOptions(addon)`.
@@ -233,7 +233,7 @@ SpellQueue can call it after blacklist-style toggles if needed.
 |------|--------|
 | `BlizzardAPI/CooldownTracking.lua` | Add `recentCasts` ring buffer + `WasCastWithin()` |
 | `SpellQueue.lua` | Add injection step + `GetPriorityInjections()` helper |
-| `Options/PriorityInjections.lua` | New file — full options UI |
+| `Options/PriorityInjections.lua` | New file - full options UI |
 | `Options/Core.lua` | Wire in new tab + expose update function |
 | `JustAC.toc` | Add PriorityInjections.lua |
 | `Options/Labels.lua` | Add locale strings |
@@ -277,11 +277,11 @@ Higher-priority rules should appear first; the UI provides Up/Down buttons.
 **Interaction with gap-closers**: Gap-closer injection runs before priority
 injection. If the gap-closer fires, it takes position 1 and shifts everything
 right. A priority injection targeting position 1 will land at position 2 in
-that frame — acceptable, not worth special-casing.
+that frame - acceptable, not worth special-casing.
 
 **Interaction with blacklist**: `addedSpellIDs` does not pre-populate from the
 blacklist for injected spells. An injected spell that is also blacklisted will
-still inject — this is intentional (user explicitly added it to the injection
+still inject - this is intentional (user explicitly added it to the injection
 list). If desired, add a `SpellQueue.IsSpellBlacklisted(spellID)` check.
 
 **No `ForceUpdate` after rule eval**: The injection runs inside
@@ -293,8 +293,8 @@ call `addon:ForceUpdate()` (same as GapClosers).
 
 ## What to implement first (suggested order)
 
-1. `WasCastWithin()` in CooldownTracking — small, self-contained, testable
-2. `GetPriorityInjections()` + injection step in SpellQueue — engine core
-3. Options UI (PriorityInjections.lua) — longest but straightforward given
+1. `WasCastWithin()` in CooldownTracking - small, self-contained, testable
+2. `GetPriorityInjections()` + injection step in SpellQueue - engine core
+3. Options UI (PriorityInjections.lua) - longest but straightforward given
    the GapClosers and Defensives panels as templates
 4. Core.lua wiring + TOC + locale strings

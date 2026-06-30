@@ -26,13 +26,13 @@ end
 
 ## Critical Workflow
 
-1. **NEVER guess WoW API behavior** — Verify with `/script` commands in-game or check `R:\WOW\00-SOURCE\WowUISource`
-2. **Propose before implementing** — Describe changes, ask "Should I proceed?"
-3. **Test with debug commands** — Use `/jac inspect modules`, `/jac find`, `/jac inspect cooldown` to validate changes
-4. **DO NOT auto-increment versions** — Track changes in `UNRELEASED.md`, only bump version on explicit instruction
-5. **DO NOT auto-build or push** — Commit changes, let user build/push manually
-6. **NO AI attribution** — Never add `Co-Authored-By`, credits, acknowledgments, or any other reference to AI agents/models in commit messages, code comments, README, CHANGELOG, or any project file. All contributions are authored solely by the project owner.
-7. **Release notes must be player-facing** — `UNRELEASED.md` and `CHANGELOG.md` should focus on user-visible changes, fixes, and configuration impacts. Technical details are allowed, but keep them simple and concise. Never mention AI, agents, models, or tooling attribution in release notes.
+1. **NEVER guess WoW API behavior** - Verify with `/script` commands in-game or check `R:\WOW\00-SOURCE\WowUISource`
+2. **Propose before implementing** - Describe changes, ask "Should I proceed?"
+3. **Test with debug commands** - Use `/jac inspect modules`, `/jac find`, `/jac inspect cooldown` to validate changes
+4. **DO NOT auto-increment versions** - Track changes in `UNRELEASED.md`, only bump version on explicit instruction
+5. **DO NOT auto-build or push** - Commit changes, let user build/push manually
+6. **NO AI attribution** - Never add `Co-Authored-By`, credits, acknowledgments, or any other reference to AI agents/models in commit messages, code comments, README, CHANGELOG, or any project file. All contributions are authored solely by the project owner.
+7. **Release notes must be player-facing** - `UNRELEASED.md` and `CHANGELOG.md` should focus on user-visible changes, fixes, and configuration impacts. Technical details are allowed, but keep them simple and concise. Never mention AI, agents, models, or tooling attribution in release notes.
 
 ## Versioning
 
@@ -45,7 +45,7 @@ Update in three places: `JustAC.toc`, `CHANGELOG.md`, `UNRELEASED.md`
 
 ## Architecture (Load Order Matters)
 
-LibStub modules in `JustAC.toc` — **MUST edit in dependency order**:
+LibStub modules in `JustAC.toc` - **MUST edit in dependency order**:
 
 ```
 BlizzardAPI → FormCache → MacroParser → ActionBarScanner → RedundancyFilter
@@ -115,9 +115,9 @@ local pcall = pcall
 local wipe = wipe
 ```
 
-### Critical API Gotcha — MUST filter "assistedcombat" string
+### Critical API Gotcha - MUST filter "assistedcombat" string
 ```lua
--- GetActionInfo(slot) may return "assistedcombat" as ID — causes crashes if not filtered
+-- GetActionInfo(slot) may return "assistedcombat" as ID - causes crashes if not filtered
 -- BlizzardAPI.GetActionInfo() handles this automatically
 if actionType == "spell" and type(id) == "string" and id == "assistedcombat" then return nil end
 ```
@@ -129,6 +129,7 @@ if actionType == "spell" and type(id) == "string" and id == "assistedcombat" the
 - **pcall()** all WoW APIs that can fail
 - **All variables local** except `JustAC` global table
 - **Increment LibStub version** on breaking changes: `LibStub:NewLibrary("JustAC-Module", VERSION)`
+- **Never use em dashes (`—`) anywhere**: not in code, comments, locale strings, README, CHANGELOG, `UNRELEASED.md`, or any project file. Use a hyphen, colon, comma, or separate sentence instead.
 
 ## Cache Patterns
 
@@ -154,14 +155,14 @@ if actionType == "spell" and type(id) == "string" and id == "assistedcombat" the
 ## Debug Commands
 
 ```
-/jac inspect modules          — Module health check
-/jac inspect cooldown [spell] — Cooldown API diagnostics (defaults to AC suggestion)
-/jac inspect defensives       — Defensive system state
-/jac inspect interrupts       — Interrupt/CC queue state
-/jac inspect burst            — Burst injection state
-/jac inspect auras            — Aura cache state
-/jac inspect perf             — Queue build rate statistics (requires debug mode)
-/jac find [spell]             — Locate spell on action bars (defaults to AC suggestion)
+/jac inspect modules          - Module health check
+/jac inspect cooldown [spell] - Cooldown API diagnostics (defaults to AC suggestion)
+/jac inspect defensives       - Defensive system state
+/jac inspect interrupts       - Interrupt/CC queue state
+/jac inspect burst            - Burst injection state
+/jac inspect auras            - Aura cache state
+/jac inspect perf             - Queue build rate statistics (requires debug mode)
+/jac find [spell]             - Locate spell on action bars (defaults to AC suggestion)
 ```
 
 ## Defensive Spell System
@@ -173,9 +174,9 @@ Also manages `CLASS_PETHEAL_DEFAULTS` and `CLASS_PET_REZ_DEFAULTS`.
 
 **Safe APIs:** `C_AssistedCombat.*`, `GetBindingKey()`, `C_Spell.GetSpellInfo()`, `C_Spell.IsSpellInRange()`, `C_Spell.IsExternalDefensive()`
 
-**`isOnGCD`** (the most-used signal) is a three-state NeverSecret bool on `C_Spell.GetSpellCooldown()`: `true`=on GCD only (spell ready), `false`=real CD running (only Blizzard-flagged spells like Judgment/BoJ/Wake), `nil`=ambiguous in combat (off-CD OR unflagged-on-CD — indistinguishable; fall back to local CD tracking + action-bar usability). See `BlizzardAPI.IsSpellReady()` for the full fallback chain.
+**`isOnGCD`** (the most-used signal) is a three-state NeverSecret bool on `C_Spell.GetSpellCooldown()`: `true`=on GCD only (spell ready), `false`=real CD running (only Blizzard-flagged spells like Judgment/BoJ/Wake), `nil`=ambiguous in combat (off-CD OR unflagged-on-CD - indistinguishable; fall back to local CD tracking + action-bar usability). See `BlizzardAPI.IsSpellReady()` for the full fallback chain.
 
-**Full combat-safe signal matrix** — every verified NeverSecret/SECRET API (units, spells, auras, action bars, cooldown events, classification APIs, C_Secrets pre-flight guards, LossOfControl, LuaDurationObject) with verification dates lives in `Documentation/12.0_COMPATIBILITY.md` → "Combat-Safe Signal Reference". Consult it before assuming any combat API is readable. Do not duplicate the matrix here — update the doc instead. (C_Secrets function list: `Documentation/MIDNIGHT_POST_LAUNCH_RESEARCH.md`.)
+**Full combat-safe signal matrix** - every verified NeverSecret/SECRET API (units, spells, auras, action bars, cooldown events, classification APIs, C_Secrets pre-flight guards, LossOfControl, LuaDurationObject) with verification dates lives in `Documentation/12.0_COMPATIBILITY.md` → "Combat-Safe Signal Reference". Consult it before assuming any combat API is readable. Do not duplicate the matrix here - update the doc instead. (C_Secrets function list: `Documentation/MIDNIGHT_POST_LAUNCH_RESEARCH.md`.)
 
 **Secret Values (WoW 12.0+):**
 - Blizzard hides certain combat data to prevent automation
@@ -230,20 +231,20 @@ end
 
 ## Reference Docs
 
-- `Documentation/STYLE_GUIDE_JUSTAC.md` — Full coding conventions (843 lines)
-- `Documentation/ASSISTED_COMBAT_API_DEEP_DIVE.md` — C_AssistedCombat reference (717 lines)
-- `Documentation/MACRO_PARSING_DEEP_DIVE.md` — Macro conditional parsing (904 lines)
-- `Documentation/12.0_COMPATIBILITY.md` — API compatibility, secret values, implementation status
-- `Documentation/AURA_DETECTION_ALTERNATIVES.md` — Alternative aura detection methods for 12.0
-- `Documentation/VERSION_CONDITIONALS.md` — Version-conditional patterns for 12.0 compatibility
-- `README.md` — User-facing docs, installation, credits
-- `CHANGELOG.md` — Release history (GPL-3.0-or-later since v2.95)
+- `Documentation/STYLE_GUIDE_JUSTAC.md` - Full coding conventions (843 lines)
+- `Documentation/ASSISTED_COMBAT_API_DEEP_DIVE.md` - C_AssistedCombat reference (717 lines)
+- `Documentation/MACRO_PARSING_DEEP_DIVE.md` - Macro conditional parsing (904 lines)
+- `Documentation/12.0_COMPATIBILITY.md` - API compatibility, secret values, implementation status
+- `Documentation/AURA_DETECTION_ALTERNATIVES.md` - Alternative aura detection methods for 12.0
+- `Documentation/VERSION_CONDITIONALS.md` - Version-conditional patterns for 12.0 compatibility
+- `README.md` - User-facing docs, installation, credits
+- `CHANGELOG.md` - Release history (GPL-3.0-or-later since v2.95)
 
 ## Build & Release
 
-**Local build** — `build.ps1` creates `dist/JustAC-<version>.zip` for local testing.
+**Local build** - `build.ps1` creates `dist/JustAC-<version>.zip` for local testing.
 
-**CI/CD** — GitHub Actions (`.github/workflows/release.yml`) auto-deploys to CurseForge via BigWigs Packager.
+**CI/CD** - GitHub Actions (`.github/workflows/release.yml`) auto-deploys to CurseForge via BigWigs Packager.
 - Triggered by git tag push (`v*` pattern)
 - Packages per `.pkgmeta`, creates GitHub Release, uploads to CurseForge (project ID: 1289544)
 - Requires `CF_API_KEY` secret in GitHub repo settings
@@ -265,6 +266,6 @@ end
    - `git tag v<version>` + `git push --tags`
    - This triggers CI → CurseForge upload
 
-**DO NOT auto-tag or auto-deploy to CurseForge** — Only tag and push tags when the user explicitly requests a release/deploy.
+**DO NOT auto-tag or auto-deploy to CurseForge** - Only tag and push tags when the user explicitly requests a release/deploy.
 
 **Before release:** Test with `/jac inspect modules` + in-game rotation to verify all modules loaded.
