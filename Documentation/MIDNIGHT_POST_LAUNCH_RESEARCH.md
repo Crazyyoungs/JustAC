@@ -158,18 +158,26 @@ strsplit, strjoin, strconcat
 
 ---
 
-## C_Secrets: Pre-Flight Guards (Confirmed 2026-03-07)
+## C_Secrets: Pre-Flight Guards (Confirmed 2026-03-07; re-validated 2026-07-05)
 
 The `C_Secrets` namespace provides fast, non-secret boolean guards
 that avoid per-value `issecretvalue()` overhead. The actual live API is significantly
 richer than wiki documentation suggested.
+
+**2026-07-05 (12.0.7 build 68275, via `/jac inspect validate arm`):** the surface is
+27 functions (`SECRETS_SURFACE_COUNT` in DebugCommands.lua trips if a patch changes it).
+The `Should*BeSecret` predicates are LIVE - they flip at combat edges in every context.
+Per-spell `GetSpellAuraSecrecy(id)==0` (NeverSecret) overrides the global aura rule.
+Behavior detail lives in `12.0_COMPATIBILITY.md` -> "C_Secrets Pre-Flight APIs"; this
+doc is the function catalog.
 
 **Confirmed functions (pairs() dump 2026-03-07):**
 
 ### Master Switch
 ```lua
 C_Secrets.HasSecretRestrictions()              --> bool: any restriction active?
--- IN COMBAT: true | OUT OF COMBAT: false
+-- STALE (12.0.1 observation): "IN COMBAT: true | OUT OF COMBAT: false"
+-- 12.0.7: TRUE baseline in open world even out of combat - master switch, not a combat signal
 ```
 
 ### Unit Data Secrecy (require unit arg)

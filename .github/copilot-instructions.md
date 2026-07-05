@@ -26,7 +26,7 @@ end
 
 ## Critical Workflow
 
-1. **NEVER guess WoW API behavior** - Verify with `/script` commands in-game or check `R:\WOW\00-SOURCE\WowUISource`
+1. **NEVER guess WoW API behavior** - Verify with `/script` commands in-game or check the local source mirrors in `R:\WOW\00-SOURCE\` (`wow-ui-source\Interface\AddOns` incl. `Blizzard_APIDocumentationGenerated`, and `WowPacketParser\WowPacketParser\Enums`; refresh both with `R:\WOW\00-SOURCE\update-sources.ps1`)
 2. **Propose before implementing** - Describe changes, ask "Should I proceed?"
 3. **Test with debug commands** - Use `/jac inspect modules`, `/jac find`, `/jac inspect cooldown` to validate changes
 4. **DO NOT auto-increment versions** - Track changes in `UNRELEASED.md`, only bump version on explicit instruction
@@ -56,17 +56,17 @@ BlizzardAPI → FormCache → MacroParser → ActionBarScanner → RedundancyFil
 | Module | Role | Key Exports | Current Version |
 |--------|------|-------------|-----------------|
 | `Locales/*.lua` | AceLocale-3.0 localization (9 languages) | `L` global | N/A (not LibStub) |
-| `SpellDB.lua` | Static spell data (defensive, class defaults) | `GetDefaults()`, `GetSpecKey()` | v9 |
-| `BlizzardAPI.lua` | Root: secret value primitives, version detection | `IsSecretValue()`, `Unsecret()`, `GetActionBarUsability()` | v35 |
-| `BlizzardAPI/CooldownTracking.lua` | Local CD tracking (12.0+ secret workaround) | `IsSpellReady()`, `RegisterSpellForTracking()`, `IsSpellOnLocalCooldown()` | v9 |
-| `BlizzardAPI/SecretValues.lua` | Feature availability gates, aura timing | `IsRedundancyFilterAvailable()`, `IsMidnightOrLater()` | v1 |
+| `SpellDB.lua` | Static spell data (defensive, class defaults) | `GetDefaults()`, `GetSpecKey()` | v12 |
+| `BlizzardAPI.lua` | Root: secret value primitives, live secrecy gates, version detection | `IsSecretValue()`, `Unsecret()`, `AreCooldownsSecret()`, `AreAurasSecret()`, `GetActionBarUsability()` | v36 |
+| `BlizzardAPI/CooldownTracking.lua` | Local CD tracking (12.0+ secret workaround) | `IsSpellReady()`, `RegisterSpellForTracking()`, `IsSpellOnLocalCooldown()` | v13 |
+| `BlizzardAPI/SecretValues.lua` | Feature availability gates, aura timing | `IsRedundancyFilterAvailable()`, `GetFeatureAvailability()` | v2 |
 | `BlizzardAPI/SpellQuery.lua` | Spell info, usability, rotation API, items | `GetProfile()`, `GetSpellInfo()`, `IsSpellUsable()` | v2 |
-| `BlizzardAPI/StateHelpers.lua` | Defensive/item state, health, CC immunity, target analysis | `CheckDefensiveItemState()`, `GetPlayerHealthPercent()`, `IsTargetCCImmune()` | v7 |
+| `BlizzardAPI/StateHelpers.lua` | Defensive/item state, health, CC immunity, target analysis | `CheckDefensiveItemState()`, `GetPlayerHealthPercent()`, `IsTargetCCImmune()` | v8 |
 | `FormCache.lua` | Shapeshift form state (Druid/Rogue/etc) | `GetActiveForm()`, `GetFormIDBySpellID()` | v11 |
-| `MacroParser.lua` | `[mod]`, `[form]`, `[spec]` conditional parsing | `GetMacroSpellInfo()`, quality scoring | v23 |
-| `ActionBarScanner.lua` | Spell→keybind lookup, slot caching | `GetSpellHotkey()`, `GetSlotForSpell()` | v37 |
-| `RedundancyFilter.lua` | Hide active buffs/forms | `IsSpellRedundant()` | v42 |
-| `SpellQueue.lua` | Throttled spell queue, proc detection | `GetCurrentSpellQueue()`, blacklist | v40 |
+| `MacroParser.lua` | `[mod]`, `[form]`, `[spec]` conditional parsing | `GetMacroSpellInfo()`, quality scoring | v24 |
+| `ActionBarScanner.lua` | Spell→keybind lookup, slot caching | `GetSpellHotkey()`, `GetSlotForSpell()` | v38 |
+| `RedundancyFilter.lua` | Hide active buffs/forms | `IsSpellRedundant()` | v43 |
+| `SpellQueue.lua` | Throttled spell queue, proc detection | `GetCurrentSpellQueue()`, blacklist | v42 |
 | **UI/** | **UI rendering subsystem (6 files)** | | |
 | `UI/UIHealthBar.lua` | Health bar widget | `Create()`, `Update()` | v8 |
 | `UI/UIAnimations.lua` | Animation helpers (glow, flash, channel fill) | `StartAssistedGlow()`, `ShowProcGlow()`, `StartFlash()` | v15 |
@@ -74,10 +74,11 @@ BlizzardAPI → FormCache → MacroParser → ActionBarScanner → RedundancyFil
 | `UI/UIFrameFactory.lua` | Icon frame pool | `AcquireFrame()`, `ReleaseFrame()` | v15 |
 | `UI/UIRenderer.lua` | Icon rendering + Masque integration | `RenderSpellQueue()`, frame management | v23 |
 | `UI/UINameplateOverlay.lua` | Nameplate overlay rendering | `Create()`, `Destroy()`, `Update()` | v10 |
-| `DefensiveEngine.lua` | Defensive spell evaluation | `EvaluateDefensives()` | v1 |
+| `DefensiveEngine.lua` | Defensive spell evaluation | `EvaluateDefensives()` | v2 |
 | `GapCloserEngine.lua` | Gap-closer spell suggestions (offensive queue) | `GetGapCloserSpell()`, `IsGapCloserSpell()`, `InvalidateGapCloserCache()` | v6 |
 | `BurstInjectionEngine.lua` | Two-phase burst injection (trigger → inject priority spells) | `TryActivateBurst()`, `GetBurstStatus()`, `PreCacheRotationCooldowns()` | v5 |
-| `DebugCommands.lua` | In-game diagnostics | `/jac inspect <topic>`, `/jac find` | v19 |
+| `PrecombatEngine.lua` | Out-of-combat buff checklist (flask/food/rune/imbue) | `IsCategorySatisfied()`, maintained-buff offers | v2 |
+| `DebugCommands.lua` | In-game diagnostics | `/jac inspect <topic>`, `/jac find` | v21 |
 | **Options/** | **Modular options panel (13 files)** | | |
 | `Options/SpellSearch.lua` | Shared spell search, filter state, spell list utils | `BuildSpellbookCache()`, `AddSpellToList()` | v1 |
 | `Options/LiveSearchPopup.lua` | Persistent modal for spell/item selection | `Open()`, `Close()`, `IsOpen()` | v1 |
@@ -161,7 +162,13 @@ if actionType == "spell" and type(id) == "string" and id == "assistedcombat" the
 /jac inspect interrupts       - Interrupt/CC queue state
 /jac inspect burst            - Burst injection state
 /jac inspect auras            - Aura cache state
-/jac inspect perf             - Queue build rate statistics (requires debug mode)
+/jac inspect buffs            - Pre-combat buff checklist state
+/jac inspect rank             - Queue context inference / per-spell ordering
+/jac inspect perf [reset]     - Queue build rate statistics (requires debug mode)
+/jac inspect chargediag [sp]  - Armed 60s charge-event/secrecy probe
+/jac inspect castdiag         - Armed one-shot cast-interruptibility probe
+/jac inspect healthprobe      - OOC health-detection channel sweep (run while hurt)
+/jac inspect validate [arm]   - Validate every secrecy/API assumption; arm = diff on combat enter/exit
 /jac find [spell]             - Locate spell on action bars (defaults to AC suggestion)
 ```
 
@@ -170,13 +177,25 @@ if actionType == "spell" and type(id) == "string" and id == "assistedcombat" the
 Spell lists managed by `DefensiveEngine.lua` using `SpellDB.CLASS_DEFENSIVE_DEFAULTS` (via `SPELL_LIST_CONFIG`).
 Also manages `CLASS_PETHEAL_DEFAULTS` and `CLASS_PET_REZ_DEFAULTS`.
 
+## Data Pipeline (tools/)
+
+Static `Data/*.lua` tables are generated from wago.tools DB2 CSV exports in `Documentation/wow_spell_csv/` (gitignored). Rules:
+
+- **One build per folder.** Generators join across tables and resolve files by glob; a mixed-build folder silently joins across builds.
+- **Refresh flow:** `python tools/update_data.py [--product wow|wowt]` pulls the latest build for every tracked table, prints a per-table row diff, swaps the folder atomically, reruns all generators, and shows `git diff --stat Data/`. It is rate-limited - be gentle with wago.tools; never script tight request loops against it.
+- **One generator per Data file** (`tools/gen_*.py`, plus `gen_archetypes.sh`). Arg-free default reads `Documentation/wow_spell_csv`.
+- **Audits are report-only** (`tools/audit_*.py|sh`): candidate diffs vs curated lists (`audit_topoff_heals.py`, `audit_cooldownset.py` for the client's own per-spec cooldown lists). Human judgment decides what enters curated files.
+- Curated files (`SpellCategories`, `InterruptAbilities`, `RangeReferences`) have no generator - edit by hand, re-run audits per patch.
+
 ## 12.0 Compatibility & Secret Values
 
 **Safe APIs:** `C_AssistedCombat.*`, `GetBindingKey()`, `C_Spell.GetSpellInfo()`, `C_Spell.IsSpellInRange()`, `C_Spell.IsExternalDefensive()`
 
 **`isOnGCD`** (the most-used signal) is a three-state NeverSecret bool on `C_Spell.GetSpellCooldown()`: `true`=on GCD only (spell ready), `false`=real CD running (only Blizzard-flagged spells like Judgment/BoJ/Wake), `nil`=ambiguous in combat (off-CD OR unflagged-on-CD - indistinguishable; fall back to local CD tracking + action-bar usability). See `BlizzardAPI.IsSpellReady()` for the full fallback chain.
 
-**Full combat-safe signal matrix** - every verified NeverSecret/SECRET API (units, spells, auras, action bars, cooldown events, classification APIs, C_Secrets pre-flight guards, LossOfControl, LuaDurationObject) with verification dates lives in `Documentation/12.0_COMPATIBILITY.md` → "Combat-Safe Signal Reference". Consult it before assuming any combat API is readable. Do not duplicate the matrix here - update the doc instead. (C_Secrets function list: `Documentation/MIDNIGHT_POST_LAUNCH_RESEARCH.md`.)
+**Full combat-safe signal matrix** - every verified NeverSecret/SECRET API (units, spells, auras, action bars, cooldown events, classification APIs, C_Secrets pre-flight guards, LossOfControl, LuaDurationObject) with verification dates lives in `Documentation/12.0_COMPATIBILITY.md` → "Combat-Safe Signal Reference". Consult it before assuming any combat API is readable. Do not duplicate the matrix here - update the doc instead. (C_Secrets function list: `Documentation/MIDNIGHT_POST_LAUNCH_RESEARCH.md`.) Re-verify the whole matrix in-game anytime with `/jac inspect validate arm`.
+
+**Live secrecy gates (validated 2026-07-05, all contexts):** the `C_Secrets.Should*BeSecret` predicates flip exactly at combat edges, both directions. Use `BlizzardAPI.AreCooldownsSecret()` / `BlizzardAPI.AreAurasSecret()` as the "is this data readable" signal - never `InCombatLockdown()` as a secrecy proxy. Per-spell secrecy overrides the globals: `C_Secrets.GetSpellAuraSecrecy(id) == 0` means that aura stays readable even mid-combat (RedundancyFilter's `IsNeverSecretAura` caches this; forced evaluation via its `ForceReadNumber`/`ForceReadString` reads exempt fields past the generic secret mark).
 
 **Secret Values (WoW 12.0+):**
 - Blizzard hides certain combat data to prevent automation
