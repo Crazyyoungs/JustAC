@@ -66,6 +66,7 @@ BlizzardAPI → FormCache → MacroParser → ActionBarScanner → RedundancyFil
 | `MacroParser.lua` | `[mod]`, `[form]`, `[spec]` conditional parsing | `GetMacroSpellInfo()`, quality scoring | v24 |
 | `ActionBarScanner.lua` | Spell→keybind lookup, slot caching | `GetSpellHotkey()`, `GetSlotForSpell()` | v38 |
 | `RedundancyFilter.lua` | Hide active buffs/forms | `IsSpellRedundant()` | v43 |
+| `DotTracker.lua` | Sink maintained enemy DoTs while their debuff is live on the target (cast-observation + `IsAuraFilteredOutByInstanceID` bridge; secret-safe) | `OnCastSucceeded()`, `OnTargetAuraUpdate()`, `IsDotActiveOnCurrentTarget()` | v1 |
 | `SpellQueue.lua` | Throttled spell queue, proc detection | `GetCurrentSpellQueue()`, blacklist | v43 |
 | **UI/** | **UI rendering subsystem (6 files)** | | |
 | `UI/UIHealthBar.lua` | Health bar widget | `Create()`, `Update()` | v8 |
@@ -164,6 +165,7 @@ if actionType == "spell" and type(id) == "string" and id == "assistedcombat" the
 /jac inspect auras            - Aura cache state
 /jac inspect buffs            - Pre-combat buff checklist state
 /jac inspect rank             - Queue context inference / per-spell ordering
+/jac inspect dots             - Maintained-DoT tracking state for the current target
 /jac inspect perf [reset]     - Queue build rate statistics (requires debug mode)
 /jac inspect chargediag [sp]  - Armed 60s charge-event/secrecy probe
 /jac inspect castdiag         - Armed one-shot cast-interruptibility probe
