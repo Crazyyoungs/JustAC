@@ -34,6 +34,22 @@ end
 6. **NO AI attribution** - Never add `Co-Authored-By`, credits, acknowledgments, or any other reference to AI agents/models in commit messages, code comments, README, CHANGELOG, or any project file. All contributions are authored solely by the project owner.
 7. **Release notes must be player-facing** - `UNRELEASED.md` and `CHANGELOG.md` should focus on user-visible changes, fixes, and configuration impacts. Technical details are allowed, but keep them simple and concise. Never mention AI, agents, models, or tooling attribution in release notes.
 
+## Lua validation (before commit / `/reload`)
+
+WoW loads Lua at runtime, so a brace slip or a typo'd global is a silent load
+failure. Run the static-analysis gate on anything you touch:
+
+```
+tools/check.ps1 SpellQueue.lua UI/UIRenderer.lua   # specific files
+tools/check.ps1                                     # whole addon
+```
+
+It prefers **luacheck** (config `.luacheckrc`: undefined globals, unused locals,
+syntax) and falls back to a **luaparser** syntax check. Baseline is ~47 known
+warnings / 0 errors - a clean change adds no errors and no *new* warnings. If no
+checker is installed, `check.ps1` prints the install command. Details:
+`Documentation/DEV_TOOLING.md`.
+
 ## Versioning
 
 **Semantic Versioning (MAJOR.MINOR.PATCH):** (current version: see `## Version:` in `JustAC.toc`)
