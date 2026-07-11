@@ -79,25 +79,25 @@ BlizzardAPI → FormCache → MacroParser → ActionBarScanner → RedundancyFil
 | `BlizzardAPI/SpellQuery.lua` | Spell info, usability, rotation API, items | `GetProfile()`, `GetSpellInfo()`, `IsSpellUsable()` | v2 |
 | `BlizzardAPI/StateHelpers.lua` | Defensive/item state, health, CC immunity, target analysis | `CheckDefensiveItemState()`, `GetPlayerHealthPercent()`, `IsTargetCCImmune()` | v10 |
 | `FormCache.lua` | Shapeshift form state (Druid/Rogue/etc) | `GetActiveForm()`, `GetFormIDBySpellID()` | v11 |
-| `MacroParser.lua` | `[mod]`, `[form]`, `[spec]` conditional parsing | `GetMacroSpellInfo()`, quality scoring | v24 |
+| `MacroParser.lua` | `[mod]`, `[form]`, `[spec]` conditional parsing | `GetMacroSpellInfo()`, quality scoring | v25 |
 | `ActionBarScanner.lua` | Spell→keybind lookup, slot caching | `GetSpellHotkey()`, `GetSlotForSpell()` | v38 |
 | `RedundancyFilter.lua` | Hide active buffs/forms | `IsSpellRedundant()` | v43 |
 | `DotTracker.lua` | Sink maintained enemy DoTs while their debuff is live on the target (cast-observation + `IsAuraFilteredOutByInstanceID` bridge; secret-safe) | `OnCastSucceeded()`, `OnTargetAuraUpdate()`, `IsDotActiveOnCurrentTarget()` | v1 |
 | `SpellQueue.lua` | Throttled spell queue, proc detection | `GetCurrentSpellQueue()`, blacklist | v43 |
 | **UI/** | **UI rendering subsystem (6 files)** | | |
-| `UI/UIHealthBar.lua` | Health bar widget | `Create()`, `Update()` | v8 |
+| `UI/UIHealthBar.lua` | Health bar widget | `Create()`, `Update()` | v9 |
 | `UI/UIAnimations.lua` | Animation helpers (glow, flash, channel fill) | `StartAssistedGlow()`, `ShowProcGlow()`, `StartFlash()` | v15 |
 | `UI/CastInterruptTracker.lua` | Interrupt debounce, cast bar discovery, LSM sound registration | `EvaluateInterrupt()`, `PlayInterruptAlertSound()`, `NotifyCCApplied()` | v1 |
-| `UI/UIFrameFactory.lua` | Icon frame pool | `AcquireFrame()`, `ReleaseFrame()` | v15 |
-| `UI/UIRenderer.lua` | Icon rendering + Masque integration | `RenderSpellQueue()`, frame management | v23 |
-| `UI/UINameplateOverlay.lua` | Nameplate overlay rendering | `Create()`, `Destroy()`, `Update()` | v10 |
+| `UI/UIFrameFactory.lua` | Icon/grab-tab frame construction | `CreateSpellIcons()`, `CreateInterruptIcon()` | v16 |
+| `UI/UIRenderer.lua` | Icon rendering + Masque integration (shared per-icon render for both surfaces) | `RenderSpellQueue()`, `RenderQueueIcon()`, `RenderInterruptSlot()` | v25 |
+| `UI/UINameplateOverlay.lua` | Nameplate overlay rendering | `Create()`, `Destroy()`, `Update()` | v11 |
 | `DefensiveEngine.lua` | Defensive spell evaluation | `EvaluateDefensives()` | v2 |
 | `GapCloserEngine.lua` | Gap-closer spell suggestions (offensive queue) | `GetGapCloserSpell()`, `IsGapCloserSpell()`, `InvalidateGapCloserCache()` | v6 |
 | `BurstInjectionEngine.lua` | Two-phase burst injection (trigger → inject priority spells) | `TryActivateBurst()`, `GetBurstStatus()`, `PreCacheRotationCooldowns()` | v5 |
 | `PrecombatEngine.lua` | Out-of-combat buff checklist (flask/food/rune/imbue) | `IsCategorySatisfied()`, maintained-buff offers | v3 |
 | `DebugCommands.lua` | In-game diagnostics | `/jac inspect <topic>`, `/jac find` | v21 |
 | **Options/** | **Modular options panel (13 files)** | | |
-| `Options/SpellSearch.lua` | Shared spell search, filter state, spell list utils | `BuildSpellbookCache()`, `AddSpellToList()` | v2 |
+| `Options/SpellSearch.lua` | Shared spell search, filter state, spell list utils | `BuildSpellbookCache()`, `AddSpellToList()`, `RebuildListSection()` | v3 |
 | `Options/LiveSearchPopup.lua` | Persistent modal for spell/item selection | `Open()`, `Close()`, `IsOpen()` | v1 |
 | `Options/General.lua` | General tab (display mode, layout, visibility) | `CreateTabArgs()` | v4 |
 | `Options/StandardQueue.lua` | Standard Queue tab (icon size, spacing, layout) | `CreateTabArgs()` | v4 |
