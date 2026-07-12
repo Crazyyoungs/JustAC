@@ -23,11 +23,26 @@ Beta finding held. `UnitHealth("player")` and `UnitHealthMax("player")` are SECR
 world combat. The `LowHealthFrame` fallback implemented in `BlizzardAPI.GetPlayerHealthPercentSafe()`
 is the correct approach.
 
-**New:** `UnitHealthPercent()` and `UnitHealthMissing()` were added in 12.0 but are
-**SECRET even out of combat** (verified 2026-03-07). They are unusable. See "New APIs" section.
+**New:** `UnitHealthPercent()` and `UnitHealthMissing()` were added in 12.0 but their
+plain (no-curve) returns are **SECRET even out of combat** (verified 2026-03-07). Unusable
+*for reading*. See "New APIs" section.
 
 **Also confirmed:** `C_Secrets.ShouldUnitHealthMaxBeSecret("player")` returns `false` in combat,
 meaning `UnitHealthMax("player")` is NeverSecret. Only `UnitHealth("player")` is secret in combat.
+
+**BREAKTHROUGH - the curve overload IS usable (verified in-game 2026-07-12, Arathi RPE,
+`HasSecretRestrictions=true`, `UnitHealth=<secret>`):** `UnitHealthPercent(unit, usePredicted, curve)`
+with a non-secret `C_CurveUtil.CreateColorCurve` maps the *secret* health fraction to a color
+**entirely in-engine** - the call does NOT throw, returns a color whose `.a` is secret, and that
+secret alpha sinks straight into `region:SetAlpha(color.a)` (never read). This is the same
+`curve -> color.a -> SetAlpha` idiom `UISootheCue`/`ApplyExecuteColor` already ship. Confirmed
+both OOC and in combat, for the player, in a secret zone. **Curve input DOMAIN is the 0-1
+fraction, NOT 0-100** (confirmed by a live two-swatch A/B, `/jac inspect healthgate`): a gate
+curve `AddPoint(0, a=1); AddPoint(1.0, a=0)` renders opaque while hurt and transparent at full;
+the 0-100 variant never hides because a fraction input never reaches 100. Threshold knob = move
+the hide-point (e.g. `0.90` to stop nagging near-full). This retires the fragile UNIT_HEALTH
+event-cadence heuristic (`HasSustainedPlayerHealthActivity`) and the ~35% `LowHealthFrame`
+vignette as the OOC "below full" signal for top-off suggestions.
 
 ### auraInstanceID mapping (RedundancyFilter v38): Holding up in live
 
